@@ -1,10 +1,10 @@
 from __future__ import annotations
 
 class HTMLNode():
-    def __init__(self, tag=None, value: str | None=None, children: HTMLNode | None=None, props: dict | None = None):
+    def __init__(self, tag=None, value: str | None=None, children: HTMLNode | None=[], props: dict | None = None):
         self.tag = tag
         self.value = value
-        self.children = value
+        self.children = children
         self.props = props
     
     def to_html(self):
@@ -34,3 +34,21 @@ class LeafNode (HTMLNode):
         
         else:
             return (f'<{self.tag}{self.props_to_html()}>{self.value}</{self.tag}>')
+        
+    def __repr__(self):
+        return f"LeafNode({self.tag}, {self.value}, {self.props})"
+
+class ParentNode (HTMLNode):
+    def __init__(self, tag, children, props = None):
+        super().__init__(tag=tag, children=children, props=props)
+
+    def to_html(self):
+        if self.tag == None:
+            raise ValueError
+        
+        elif not self.children:
+            raise ValueError ("ParentNode requires children")
+        
+        else:
+            children_html = "".join(child.to_html() for child in self.children)
+            return (f'<{self.tag}{self.props_to_html()}>{children_html}</{self.tag}>')
